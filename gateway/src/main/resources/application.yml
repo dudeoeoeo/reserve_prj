@@ -1,0 +1,53 @@
+server:
+  port: 7777
+
+spring:
+  application:
+    name: kei-apigateway
+  cloud:
+    gateway:
+      default-filters:
+        - name: GlobalFilter
+          args:
+            startMessage: Kei's SCG Filter
+      routes:
+        - id: user
+          uri: http://127.0.0.1:8080
+          predicates:
+            - Path=/user/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user/(?<segment>.*), /$\{segment}
+
+        - id: user
+          uri: http://127.0.0.1:8080
+          predicates:
+            - Path=/user/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user/(?<segment>.*), /$\{segment}
+
+        - id: user
+          uri: http://127.0.0.1:8080/user
+          predicates:
+            - Path=/user/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter  # login을 제외한 모든 요청은 헤더 체크
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "gateway"
+  endpoint:
+    gateway:
+      enabled: true # /actuator/gateway/routes 라우트 정보 확인
+
+token:
+  secret: kei_test
