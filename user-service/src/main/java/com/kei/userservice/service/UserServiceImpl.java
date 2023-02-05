@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserDetailByEmail(String email) {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         final UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException(email)
         );

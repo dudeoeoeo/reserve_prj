@@ -1,5 +1,6 @@
 package com.kei.userservice.security;
 
+import com.kei.userservice.security.token.TokenProvider;
 import com.kei.userservice.service.UserService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -16,11 +17,13 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private Environment env;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserService userService;
+    private TokenProvider tokenProvider;
 
-    public WebSecurity(Environment env, BCryptPasswordEncoder bCryptPasswordEncoder, UserService userService) {
+    public WebSecurity(Environment env, BCryptPasswordEncoder bCryptPasswordEncoder, UserService userService, TokenProvider tokenProvider) {
         this.env = env;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userService = userService;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
         AuthenticationFilter authenticationFilter =
-                new AuthenticationFilter(authenticationManager(), env, userService);
+                new AuthenticationFilter(authenticationManager(), env, userService, tokenProvider);
         return authenticationFilter;
     }
 

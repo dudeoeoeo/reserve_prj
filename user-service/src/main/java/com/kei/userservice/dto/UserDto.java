@@ -12,5 +12,5 @@ public class UserDto {
     private String pwd;
     private String userId;
     private String encryptedPwd;
-    private UserRole userRole;
+    private UserRole role;
 }
