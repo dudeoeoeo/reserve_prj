@@ -1,15 +1,12 @@
 package com.kei.userservice.security;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kei.userservice.dto.UserDto;
-import com.kei.userservice.entity.UserEntity;
 import com.kei.userservice.security.token.TokenProperty;
 import com.kei.userservice.security.token.TokenProvider;
 import com.kei.userservice.service.UserService;
 import com.kei.userservice.vo.LoginReq;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,19 +24,15 @@ import java.util.ArrayList;
 @Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private Environment env;
     private UserService userService;
-    private Algorithm algorithm;
     private TokenProvider tokenProvider;
-    private String secretKey;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, Environment env, UserService userService, TokenProvider tokenProvider) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager,
+                                UserService userService, TokenProvider tokenProvider)
+    {
         super.setAuthenticationManager(authenticationManager);
-        this.env = env;
         this.userService = userService;
         this.tokenProvider = tokenProvider;
-        this.secretKey = env.getProperty("token.secret");
-        this.algorithm = Algorithm.HMAC512(secretKey);
     }
 
     @Override
@@ -61,7 +54,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String userName = ((User) authResult.getPrincipal()).getUsername();
         final UserDto userDetail = userService.getUserDetailByEmail(userName);
 
-        final String accessToken = tokenProvider.generateToken(userDetail, secretKey, algorithm);
+        final String accessToken = tokenProvider.generateToken(userDetail);
 
         response.addHeader(TokenProperty.HEADER_STRING, TokenProperty.HEADER_PREFIX + accessToken);
     }

@@ -1,6 +1,7 @@
 package com.kei.gateway.filter;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.kei.gateway.jwt.TokenProperty;
 import com.kei.gateway.jwt.TokenVerify;
 import com.kei.gateway.jwt.VerifyResult;
 import lombok.extern.slf4j.Slf4j;
@@ -36,11 +37,11 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             ServerHttpRequest request = exchange.getRequest();
             ServerHttpResponse response = exchange.getResponse();
 
-            if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+            if (!request.getHeaders().containsKey(TokenProperty.HEADER_STRING)) {
                 return onError(exchange, "No Auth Header", HttpStatus.UNAUTHORIZED);
             }
 
-            String authorizationHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+            String authorizationHeader = request.getHeaders().get(TokenProperty.HEADER_STRING).get(0);
             final VerifyResult verifyResult = tokenVerify.verify(authorizationHeader, algorithm);
 
             if (!verifyResult.isResult()) {

@@ -14,7 +14,7 @@ spring:
         - id: user
           uri: http://127.0.0.1:8080
           predicates:
-            - Path=/user/login
+            - Path=/login
             - Method=POST
           filters:
             - RemoveRequestHeader=Cookie
@@ -23,7 +23,7 @@ spring:
         - id: user
           uri: http://127.0.0.1:8080
           predicates:
-            - Path=/user/users
+            - Path=/users
             - Method=POST
           filters:
             - RemoveRequestHeader=Cookie
@@ -38,6 +38,15 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user/(?<segment>.*), /$\{segment}
             - AuthorizationHeaderFilter  # login을 제외한 모든 요청은 헤더 체크
+
+        - id: test
+          uri: http://127.0.0.1:8666
+          predicates:
+            - Path=/health
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user/(?<segment>.*), /$\{segment}
 
 management:
   endpoints:

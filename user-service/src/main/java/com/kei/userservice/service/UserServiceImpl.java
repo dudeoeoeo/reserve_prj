@@ -4,9 +4,10 @@ import com.kei.userservice.dto.UserDto;
 import com.kei.userservice.entity.UserEntity;
 import com.kei.userservice.entity.UserRepository;
 import com.kei.userservice.entity.UserRole;
+import com.kei.userservice.security.token.TokenProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.UUID;
 
 @Service
@@ -25,12 +24,15 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private TokenProvider tokenProvider;
     private final ModelMapper modelMapper = new ModelMapper();
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder)
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
+                           TokenProvider tokenProvider, Environment env)
     {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -62,8 +64,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String renewToken(String token) {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        final String userId = tokenProvider.getUserIdFromToken(token);
+        final UserEntity userEntity = findByUserId(userId);
+
+        final UserDto userDto = modelMapper.map(userEntity, UserDto.class);
+        final String renewAccessToken = tokenProvider.renewAccessToken(userDto);
+        return renewAccessToken;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("loadUserByUsername: " + email);
         final UserEntity user = userRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException(email)
         );
@@ -76,6 +88,12 @@ public class UserServiceImpl implements UserService {
                 true,
                 true,
                 new ArrayList()
+        );
+    }
+
+    private UserEntity findByUserId(String userId) {
+        return userRepository.findByUserId(userId).orElseThrow(
+                () -> new UsernameNotFoundException(userId)
         );
     }
 }
