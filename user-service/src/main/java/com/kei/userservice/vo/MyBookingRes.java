@@ -1,2 +1,15 @@
-package com.kei.userservice.vo;public class MyBookingRes {
+package com.kei.userservice.vo;
+
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
+@Getter
+public class MyBookingRes {
+    private Long id;
+    private String status;
+    private String userId;
+    private String name;
+    private String phone;
+    private LocalDateTime reservationTime;
 }
