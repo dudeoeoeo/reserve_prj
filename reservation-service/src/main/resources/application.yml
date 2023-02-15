@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: reserve
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: kei
+    password: kei_1234
   h2:
     console:
       enabled: true

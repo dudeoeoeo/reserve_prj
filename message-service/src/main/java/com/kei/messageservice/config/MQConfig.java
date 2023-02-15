@@ -7,7 +7,6 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -65,27 +64,4 @@ public class MQConfig {
     MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }
-
-//    @Bean
-//    MessageConverter messageConverter() {
-//        return new Jackson2JsonMessageConverter();
-//    }
-
-//    @Bean
-//    SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
-//        final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-//        factory.setConnectionFactory(connectionFactory);
-//        factory.setMessageConverter(messageConverter());
-//        return factory;
-//    }
-
-//    @Bean
-//    ConnectionFactory connectionFactory() {
-//        final CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-//        connectionFactory.setHost(host);
-//        connectionFactory.setPort(port);
-//        connectionFactory.setUsername(username);
-//        connectionFactory.setPassword(password);
-//        return connectionFactory;
-//    }
 }
