@@ -30,23 +30,14 @@ spring:
             - RewritePath=/user/(?<segment>.*), /$\{segment}
 
         - id: user
-          uri: http://127.0.0.1:8080/user
+          uri: http://127.0.0.1:8080
           predicates:
             - Path=/user/**
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user/(?<segment>.*), /$\{segment}
-            - AuthorizationHeaderFilter  # login을 제외한 모든 요청은 헤더 체크
-
-        - id: test
-          uri: http://127.0.0.1:8666
-          predicates:
-            - Path=/health
-            - Method=GET
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/user/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter  # login 과 회원가입 을 제외한 모든 요청은 헤더 체크
 
 management:
   endpoints:
